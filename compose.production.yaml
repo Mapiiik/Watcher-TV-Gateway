@@ -1,0 +1,29 @@
+services:
+  tv-gateway:
+    image: ghcr.io/mapiiik/watcher-tv-gateway:latest
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      LISTENER_MODE: ${LISTENER_MODE:-direct}
+      PROXY_ALLOW: ${PROXY_ALLOW:-127.0.0.1/32 ::1/128}
+      CRM_API_URL: ${CRM_API_URL:?set CRM_API_URL}
+      CRM_API_KEY: ${CRM_API_KEY:?set CRM_API_KEY}
+      CRM_API_VERIFY_TLS: ${CRM_API_VERIFY_TLS:-true}
+      TV_PROVIDER: ${TV_PROVIDER:?set TV_PROVIDER}
+      SLEDOVANITV_PARTNER: ${SLEDOVANITV_PARTNER:-}
+      SLEDOVANITV_PASSWORD: ${SLEDOVANITV_PASSWORD:-}
+      SLEDOVANITV_API_URL: ${SLEDOVANITV_API_URL:-}
+      OPERATOR_NAME: ${OPERATOR_NAME:?set OPERATOR_NAME}
+      SUPPORT_PHONE: ${SUPPORT_PHONE:?set SUPPORT_PHONE}
+      EXCLUDED_COMPANIES: ${EXCLUDED_COMPANIES:-}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+
+volumes:
+  caddy_data:
+  caddy_config:

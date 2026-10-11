@@ -1,0 +1,5 @@
+/vendor/
+/data/*
+.env
+compose.yaml
+.phpunit.cache/

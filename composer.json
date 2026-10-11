@@ -1,0 +1,36 @@
+{
+    "name": "mapiiik/watcher-tv-gateway",
+    "description": "Authentication proxy for TV services: recognises an operator's customers by their IP address in Watcher CRM and signs them in to their TV provider.",
+    "type": "project",
+    "license": "AGPL-3.0-or-later",
+    "require": {
+        "php": ">=8.4",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "WatcherTvGateway\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WatcherTvGateway\\Test\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "stan": "phpstan analyse --memory-limit=512M"
+    },
+    "config": {
+        "platform": {
+            "php": "8.4.0"
+        },
+        "sort-packages": true
+    }
+}

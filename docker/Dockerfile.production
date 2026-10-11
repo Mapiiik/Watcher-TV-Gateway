@@ -1,0 +1,73 @@
+# syntax=docker/dockerfile:1
+
+############################
+# Dependencies
+############################
+FROM composer:2 AS vendor
+
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --no-autoloader \
+    --ignore-platform-req=php
+# the classmap is built from the code, so the code has to be there first
+COPY src/ ./src/
+RUN composer dump-autoload --no-dev --classmap-authoritative
+
+############################
+# Runtime
+############################
+FROM dunglas/frankenphp:php8.4-alpine
+
+ARG buildno
+ARG gitcommithash
+
+ARG APPLICATION_USER=application
+
+LABEL application="Watcher TV Gateway"
+LABEL maintainer="github.com/Mapiiik"
+
+RUN echo "Build number: $buildno"
+RUN echo "Based on commit: $gitcommithash"
+
+############################
+# PHP
+############################
+RUN install-php-extensions \
+    opcache
+
+# Production defaults
+RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
+ && echo "date.timezone = UTC" > $PHP_INI_DIR/conf.d/99-timezone.ini \
+ && echo "expose_php = Off" > $PHP_INI_DIR/conf.d/99-expose.ini
+
+############################
+# Application
+############################
+COPY --from=vendor /app/vendor /app/vendor
+COPY composer.json /app/
+COPY src/ /app/src/
+COPY templates/ /app/templates/
+COPY public/ /app/public/
+
+############################
+# Caddy configuration
+############################
+# Shared by all our Caddy servers: PROXY protocol always on, LISTENER_MODE direct or behind-proxy
+COPY caddy/ /etc/frankenphp/
+
+############################
+# Non-root runtime
+############################
+RUN \
+    adduser -D ${APPLICATION_USER}; \
+    # Add additional capability to bind to port 80 and 443
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
+    # Give write access to /config/caddy and /data/caddy
+    chown -R ${APPLICATION_USER}:${APPLICATION_USER} /config/caddy /data/caddy
+
+USER ${APPLICATION_USER}
