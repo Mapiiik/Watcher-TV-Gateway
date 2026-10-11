@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Watcher TV Gateway\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs_CZ\n"
+
+msgid "%s – identification failed"
+msgstr "%s – identifikace selhala"
+
+msgid "Dear customer,"
+msgstr "Vážený zákazníku,"
+
+msgid "If the trouble persists, please call us on %s."
+msgstr "Pokud potíže trvají, informujte nás prosím na telefonním čísle %s."
+
+msgid "If you are a customer of %s, please call us on %s."
+msgstr "Pokud jste zákazníkem %s, informujte nás prosím na telefonním čísle %s."
+
+msgid "Signing in and registration are out of service at the moment. Please try again in a while."
+msgstr "Registrace a přihlašování je teď mimo provoz. Zkuste to prosím za chvíli."
+
+msgid "The channel list could not be downloaded"
+msgstr "Seznam kanálů se nepodařilo stáhnout"
+
+msgid "Your IP address is: %s"
+msgstr "Vaše IP adresa je: %s"
+
+msgid "Your address %s has no TV registered"
+msgstr "Vaše adresa %s nemá vysílání zaregistrované"
+
+msgid "you are trying to register with %s. Unfortunately we could not identify you. To register, or to be signed in to an account you already have, you have to be connected to the internet at the connection %s provides you with."
+msgstr "pokoušíte se zaregistrovat ke službě %s. Bohužel se Vás nepodařilo identifikovat. Pro registraci nebo automatické přihlášení do již vytvořeného účtu je nutné, abyste byli připojeni k internetu na přípojce, kterou Vám %s poskytuje."
+

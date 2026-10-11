@@ -39,10 +39,13 @@ final readonly class Gateway
     public static function fromEnvironment(Environment $env): self
     {
         $provider = Providers::fromEnvironment($env, new CurlHttpClient());
-        $templates = $env->optional('TEMPLATES_DIR', dirname(__DIR__) . '/templates');
+        $root = dirname(__DIR__);
+        $templates = $env->optional('TEMPLATES_DIR', $root . '/templates');
         if (!is_dir($templates)) {
             throw new ConfigurationError(sprintf('TEMPLATES_DIR %s is not a directory.', $templates));
         }
+        $locale = $env->optional('APP_DEFAULT_LOCALE', 'en_US');
+        $language = Translations::language($locale);
 
         return new self(
             WatcherCrm::fromEnvironment($env, new CurlHttpClient(verifyTls: $env->flag('CRM_API_VERIFY_TLS', true))),
@@ -51,7 +54,10 @@ final readonly class Gateway
                 'operator' => $env->required('OPERATOR_NAME'),
                 'supportPhone' => $env->required('SUPPORT_PHONE'),
                 'service' => $provider->name(),
-            ]),
+                'language' => $language,
+                // the pictures of a playlist entry carry text, so there is a set for each language
+                'images' => is_dir($root . '/public/images/' . $language) ? 'images/' . $language . '/' : 'images/',
+            ], Translations::forLocale($locale, $root . '/resources/locales')),
             $env->list('EXCLUDED_COMPANIES'),
         );
     }

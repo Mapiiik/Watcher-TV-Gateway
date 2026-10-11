@@ -7,7 +7,9 @@
         "php": ">=8.4",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "gettext/gettext": "^5.7",
+        "gettext/translator": "^1.2"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",

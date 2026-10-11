@@ -23,6 +23,7 @@ services:
       SUPPORT_PHONE: ${SUPPORT_PHONE:?set SUPPORT_PHONE}
       EXCLUDED_COMPANIES: ${EXCLUDED_COMPANIES:-}
       TEMPLATES_DIR: ${TEMPLATES_DIR:-}
+      APP_DEFAULT_LOCALE: ${APP_DEFAULT_LOCALE:-}
     volumes:
       - caddy_data:/data
       - caddy_config:/config

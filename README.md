@@ -41,12 +41,18 @@ settings read in `fromEnvironment()`, and gets its name in `WatcherTvGateway\Pro
 ## Making it yours
 
 Nothing about the operator is in the code. Its name and support phone come from `OPERATOR_NAME`
-and `SUPPORT_PHONE`, the customers left out from `EXCLUDED_COMPANIES`. The pages and playlist
-entries in `templates/` are Czech: for other texts or another language, mount a directory with the
-same files and point `TEMPLATES_DIR` at it. A template gets its values in `$v` (`ip`, `operator`,
-`supportPhone`, `service`) and escapes them for HTML with `$e`. The pictures a player shows for a
-playlist entry (`public/not-identified.jpg`, `public/not-registered.jpg`) can be replaced by
-mounting files over them.
+and `SUPPORT_PHONE`, the customers left out from `EXCLUDED_COMPANIES`.
+
+The texts of the pages and playlist entries in `templates/` are English and translated, as in
+Watcher CRM, from `resources/locales/<locale>/default.po` (`cs_CZ` so far); `APP_DEFAULT_LOCALE`
+picks the language. After changing the texts, `php bin/extract-texts.php` brings `default.pot` and
+the catalogues up to date and lists what is left to translate. The pictures a player shows for a
+playlist entry carry text too: `public/images/` holds the English ones, `public/images/<language>/`
+those of a language.
+
+For texts of your own, mount a directory with the same files as `templates/` and point
+`TEMPLATES_DIR` at it. A template gets its values in `$v` (`ip`, `operator`, `supportPhone`,
+`service`, `language`, `images`), translates with `$t` and escapes for HTML with `$e`.
 
 ## Running it
 

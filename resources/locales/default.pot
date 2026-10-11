@@ -1,0 +1,34 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Watcher TV Gateway\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "%s – identification failed"
+msgstr ""
+
+msgid "Dear customer,"
+msgstr ""
+
+msgid "If the trouble persists, please call us on %s."
+msgstr ""
+
+msgid "If you are a customer of %s, please call us on %s."
+msgstr ""
+
+msgid "Signing in and registration are out of service at the moment. Please try again in a while."
+msgstr ""
+
+msgid "The channel list could not be downloaded"
+msgstr ""
+
+msgid "Your IP address is: %s"
+msgstr ""
+
+msgid "Your address %s has no TV registered"
+msgstr ""
+
+msgid "you are trying to register with %s. Unfortunately we could not identify you. To register, or to be signed in to an account you already have, you have to be connected to the internet at the connection %s provides you with."
+msgstr ""
+

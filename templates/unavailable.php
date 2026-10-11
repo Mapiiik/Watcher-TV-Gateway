@@ -1,19 +1,20 @@
 <?php
 /**
  * @var array<string, string> $v
+ * @var \Closure(string, string...): string $t
  * @var \Closure(string): string $e
  */
 ?><!DOCTYPE html>
-<html lang="cs">
+<html lang="<?= $e($v['language']) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($v['service']) ?> – identifikace selhala</title>
+    <title><?= $e($t('%s – identification failed', $v['service'])) ?></title>
 </head>
 <body>
-    <h2><?= $e($v['service']) ?> – identifikace selhala</h2>
-    <p>Registrace a přihlašování je teď mimo provoz. Zkuste to prosím za chvíli.</p>
-    <p>Vaše IP adresa je: <?= $e($v['ip']) ?></p>
-    <p>Pokud potíže trvají, informujte nás prosím na telefonním čísle <?= $e($v['supportPhone']) ?>.</p>
+    <h2><?= $e($t('%s – identification failed', $v['service'])) ?></h2>
+    <p><?= $e($t('Signing in and registration are out of service at the moment. Please try again in a while.')) ?></p>
+    <p><?= $e($t('Your IP address is: %s', $v['ip'])) ?></p>
+    <p><?= $e($t('If the trouble persists, please call us on %s.', $v['supportPhone'])) ?></p>
 </body>
 </html>

@@ -52,6 +52,7 @@ COPY --from=vendor /app/vendor /app/vendor
 COPY composer.json /app/
 COPY src/ /app/src/
 COPY templates/ /app/templates/
+COPY resources/ /app/resources/
 COPY public/ /app/public/
 
 ############################

@@ -3,7 +3,9 @@
  * The customer is recognised but has not registered with the service yet.
  *
  * @var array<string, string> $v
+ * @var \Closure(string, string...): string $t
  */
 ?>#EXTM3U
-#EXTINF:,Vaše adresa <?= preg_replace('/[\r\n]/', '', $v['ip']) ?> nemá vysílání zaregistrované
-not-registered.jpg
+#EXTINF:,<?= preg_replace('/[\r\n]/', '', $t('Your address %s has no TV registered', $v['ip'])) ?>
+
+<?= $v['images'] ?>not-registered.jpg

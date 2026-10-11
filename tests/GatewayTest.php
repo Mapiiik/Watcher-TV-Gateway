@@ -14,10 +14,12 @@ use WatcherTvGateway\Response;
 use WatcherTvGateway\Templates;
 use WatcherTvGateway\Test\Support\FakeDirectory;
 use WatcherTvGateway\Test\Support\FakeProvider;
+use WatcherTvGateway\Translations;
 
 #[CoversClass(Gateway::class)]
 #[CoversClass(Templates::class)]
 #[CoversClass(Response::class)]
+#[CoversClass(Translations::class)]
 final class GatewayTest extends TestCase
 {
     private const string IP = '192.0.2.10';
@@ -40,7 +42,7 @@ final class GatewayTest extends TestCase
         $response = $this->gateway($provider)->handle('GET', '/', '198.51.100.7');
 
         $this->assertSame(403, $response->status);
-        $this->assertStringContainsString('TestTV – identifikace selhala', $response->body);
+        $this->assertStringContainsString('TestTV – identification failed', $response->body);
         $this->assertStringContainsString('198.51.100.7', $response->body);
         $this->assertStringContainsString('NETAIR, s.r.o.', $response->body);
         $this->assertStringContainsString('+420 604 553 444', $response->body);
@@ -69,7 +71,7 @@ final class GatewayTest extends TestCase
 
         foreach ([$unavailableCrm, $unavailableProvider] as $response) {
             $this->assertSame(503, $response->status);
-            $this->assertStringContainsString('mimo provoz', $response->body);
+            $this->assertStringContainsString('out of service', $response->body);
         }
     }
 
@@ -91,10 +93,50 @@ final class GatewayTest extends TestCase
         $unavailable = $this->gateway(new FakeProvider(ProviderAnswer::unavailable('test')))
             ->handle('GET', '/channels.m3u', self::IP);
 
-        $this->assertSame("#EXTM3U\n#EXTINF:,Vaše adresa 198.51.100.7 nemá vysílání zaregistrované\nnot-identified.jpg\n", $notIdentified->body);
+        $this->assertSame("#EXTM3U\n#EXTINF:,Your address 198.51.100.7 has no TV registered\nimages/not-identified.jpg\n", $notIdentified->body);
         $this->assertSame('audio/x-mpegurl; charset=UTF-8', $notIdentified->headers['Content-Type']);
-        $this->assertStringEndsWith("not-registered.jpg\n", $notRegistered->body);
-        $this->assertStringContainsString('Seznam kanálů se nepodařilo stáhnout', $unavailable->body);
+        $this->assertStringEndsWith("images/not-registered.jpg\n", $notRegistered->body);
+        $this->assertStringContainsString('The channel list could not be downloaded', $unavailable->body);
+    }
+
+    public function testTheTextsAndPicturesAreInTheLanguageOfTheDeployment(): void
+    {
+        $env = new Environment([
+            'CRM_API_URL' => 'https://crm.example.net/api/customer-portal',
+            'CRM_API_KEY' => 'portal-key',
+            'TV_PROVIDER' => 'sledovanitv',
+            'SLEDOVANITV_PARTNER' => 'netair',
+            'SLEDOVANITV_PASSWORD' => 'secret',
+            'OPERATOR_NAME' => 'NETAIR, s.r.o.',
+            'SUPPORT_PHONE' => '+420 604 553 444',
+            'APP_DEFAULT_LOCALE' => 'cs_CZ',
+        ]);
+        $translator = Translations::forLocale('cs_CZ', dirname(__DIR__) . '/resources/locales');
+        $templates = new Templates(dirname(__DIR__) . '/templates', [
+            'operator' => 'NETAIR, s.r.o.',
+            'supportPhone' => '+420 604 553 444',
+            'service' => 'SledovaniTV',
+            'language' => 'cs',
+            'images' => 'images/cs/',
+        ], $translator);
+
+        $page = $templates->page(403, 'not-identified', ['ip' => '198.51.100.7']);
+        $playlist = $templates->playlist('playlist-not-identified', ['ip' => '198.51.100.7']);
+
+        $this->assertStringContainsString('<html lang="cs">', $page->body);
+        $this->assertStringContainsString('SledovaniTV – identifikace selhala', $page->body);
+        $this->assertStringContainsString('kterou Vám NETAIR, s.r.o. poskytuje.', $page->body);
+        $this->assertSame("#EXTM3U\n#EXTINF:,Vaše adresa 198.51.100.7 nemá vysílání zaregistrované\nimages/cs/not-identified.jpg\n", $playlist->body);
+        $this->assertFileExists(dirname(__DIR__) . '/public/images/cs/not-identified.jpg');
+        $this->assertSame(404, Gateway::fromEnvironment($env)->handle('GET', '/nothing', self::IP)->status);
+    }
+
+    public function testALocaleWithoutACatalogueStaysEnglish(): void
+    {
+        $translator = Translations::forLocale('de_DE', dirname(__DIR__) . '/resources/locales');
+
+        $this->assertSame('Dear customer,', $translator->gettext('Dear customer,'));
+        $this->assertSame('cs', Translations::language('cs_CZ'));
     }
 
     public function testSomethingThatIsNotAnAddressIsNotAskedAbout(): void
@@ -162,6 +204,8 @@ final class GatewayTest extends TestCase
                 'operator' => 'NETAIR, s.r.o.',
                 'supportPhone' => '+420 604 553 444',
                 'service' => $provider->name(),
+                'language' => 'en',
+                'images' => 'images/',
             ]),
             ['MOPOS'],
         );
