@@ -20,8 +20,10 @@ built by GitHub Actions.
 1. The client's address comes from the PROXY protocol header the proxy sends. Caddy takes it only
    from `PROXY_ALLOW`, so nobody else can claim an address.
 2. Watcher CRM is asked who uses the address (`GET /api/customer-portal/identify`), as a CRM user
-   with the `customer-portal` role and its API key. Only a customer with an installation address
-   counts, and customers of the companies in `EXCLUDED_COMPANIES` are left out.
+   with the `customer-identification` role and its API key, which may ask nothing else. The CRM
+   logs every lookup and refuses more than its settings allow in a minute. Only a customer with
+   an installation address counts, and customers of the companies in `EXCLUDED_COMPANIES` are
+   left out.
 3. The provider (`TV_PROVIDER`) gets the customer number as the customer's identity there,
    with their name, e-mail and installation address, and answers where to send them.
 
@@ -56,7 +58,7 @@ For texts of your own, mount a directory with the same files as `templates/` and
 
 ## Running it
 
-1. In Watcher CRM, create a user with the **customer-portal** role and give it an API key.
+1. In Watcher CRM, create a user with the **customer-identification** role and give it an API key.
 2. Copy `.env.example` to `.env` and fill it in. `.env` stays out of git.
 3. Copy `compose.production.yaml` to `compose.yaml` and start it:
 

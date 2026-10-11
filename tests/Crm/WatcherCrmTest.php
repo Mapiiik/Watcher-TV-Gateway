@@ -81,7 +81,16 @@ final class WatcherCrmTest extends TestCase
         $this->http->answer(302, '');
 
         $this->expectException(CrmUnavailable::class);
-        $this->expectExceptionMessage('HTTP 302, check CRM_API_KEY');
+        $this->expectExceptionMessage('HTTP 302, check CRM_API_KEY and its role');
+        $this->crm->findByAddress('192.0.2.10');
+    }
+
+    public function testTooManyLookupsAreReportedAsSuch(): void
+    {
+        $this->http->answer(429, '{"message":"Too many lookups, try again in a minute."}');
+
+        $this->expectException(CrmUnavailable::class);
+        $this->expectExceptionMessage('HTTP 429, too many lookups in a minute');
         $this->crm->findByAddress('192.0.2.10');
     }
 

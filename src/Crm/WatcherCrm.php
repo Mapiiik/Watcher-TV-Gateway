@@ -10,7 +10,7 @@ use WatcherTvGateway\Http\HttpError;
 use WatcherTvGateway\Http\HttpRequest;
 
 /**
- * Watcher CRM, asked over its customer portal API as a user with the customer-portal role.
+ * Watcher CRM, asked over its customer portal API as a user with the customer-identification role.
  *
  * Only a customer with an installation address counts as connected: the TV service is for the
  * place a connection is installed at, and an address of somebody without one is not a home.
@@ -50,7 +50,11 @@ final readonly class WatcherCrm implements CustomerDirectory
             throw new CrmUnavailable(sprintf(
                 'Watcher CRM answered with HTTP %d%s.',
                 $response->status,
-                in_array($response->status, [302, 401, 403], true) ? ', check CRM_API_KEY' : '',
+                match (true) {
+                    in_array($response->status, [302, 401, 403], true) => ', check CRM_API_KEY and its role',
+                    $response->status === 429 => ', too many lookups in a minute',
+                    default => '',
+                },
             ));
         }
 
