@@ -39,11 +39,15 @@ final readonly class Gateway
     public static function fromEnvironment(Environment $env): self
     {
         $provider = Providers::fromEnvironment($env, new CurlHttpClient());
+        $templates = $env->optional('TEMPLATES_DIR', dirname(__DIR__) . '/templates');
+        if (!is_dir($templates)) {
+            throw new ConfigurationError(sprintf('TEMPLATES_DIR %s is not a directory.', $templates));
+        }
 
         return new self(
             WatcherCrm::fromEnvironment($env, new CurlHttpClient(verifyTls: $env->flag('CRM_API_VERIFY_TLS', true))),
             $provider,
-            new Templates(dirname(__DIR__) . '/templates', [
+            new Templates($templates, [
                 'operator' => $env->required('OPERATOR_NAME'),
                 'supportPhone' => $env->required('SUPPORT_PHONE'),
                 'service' => $provider->name(),

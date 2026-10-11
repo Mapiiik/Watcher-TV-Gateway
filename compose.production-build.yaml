@@ -22,6 +22,7 @@ services:
       OPERATOR_NAME: ${OPERATOR_NAME:?set OPERATOR_NAME}
       SUPPORT_PHONE: ${SUPPORT_PHONE:?set SUPPORT_PHONE}
       EXCLUDED_COMPANIES: ${EXCLUDED_COMPANIES:-}
+      TEMPLATES_DIR: ${TEMPLATES_DIR:-}
     volumes:
       - caddy_data:/data
       - caddy_config:/config

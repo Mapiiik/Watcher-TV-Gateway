@@ -38,6 +38,16 @@ the customer.
 A new provider implements `WatcherTvGateway\Provider\TvProvider` (sign in, playlist) with its own
 settings read in `fromEnvironment()`, and gets its name in `WatcherTvGateway\Provider\Providers`.
 
+## Making it yours
+
+Nothing about the operator is in the code. Its name and support phone come from `OPERATOR_NAME`
+and `SUPPORT_PHONE`, the customers left out from `EXCLUDED_COMPANIES`. The pages and playlist
+entries in `templates/` are Czech: for other texts or another language, mount a directory with the
+same files and point `TEMPLATES_DIR` at it. A template gets its values in `$v` (`ip`, `operator`,
+`supportPhone`, `service`) and escapes them for HTML with `$e`. The pictures a player shows for a
+playlist entry (`public/not-identified.jpg`, `public/not-registered.jpg`) can be replaced by
+mounting files over them.
+
 ## Running it
 
 1. In Watcher CRM, create a user with the **customer-portal** role and give it an API key.

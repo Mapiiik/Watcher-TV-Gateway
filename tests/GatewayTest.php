@@ -136,6 +136,23 @@ final class GatewayTest extends TestCase
         Gateway::fromEnvironment(new Environment(['TV_PROVIDER' => 'sledovanitv']));
     }
 
+    public function testTemplatesOfItsOwnHaveToBeThere(): void
+    {
+        $this->expectException(ConfigurationError::class);
+        $this->expectExceptionMessage('TEMPLATES_DIR /nowhere is not a directory.');
+
+        Gateway::fromEnvironment(new Environment([
+            'CRM_API_URL' => 'https://crm.example.net/api/customer-portal',
+            'CRM_API_KEY' => 'portal-key',
+            'TV_PROVIDER' => 'sledovanitv',
+            'SLEDOVANITV_PARTNER' => 'netair',
+            'SLEDOVANITV_PASSWORD' => 'secret',
+            'OPERATOR_NAME' => 'NETAIR, s.r.o.',
+            'SUPPORT_PHONE' => '+420 604 553 444',
+            'TEMPLATES_DIR' => '/nowhere',
+        ]));
+    }
+
     private function gateway(FakeProvider $provider, ?FakeDirectory $directory = null): Gateway
     {
         return new Gateway(
