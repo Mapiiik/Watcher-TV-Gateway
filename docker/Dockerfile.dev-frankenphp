@@ -1,0 +1,73 @@
+# syntax=docker/dockerfile:1
+
+FROM dunglas/frankenphp:php8.4-alpine
+
+ARG buildno
+ARG gitcommithash
+
+RUN echo "Build number: $buildno"
+RUN echo "Based on commit: $gitcommithash"
+
+ENV SERVER_ROOT="/app/public"
+
+# the extensions of the production image
+RUN install-php-extensions \
+    opcache
+
+# add additional PHP extensions here:
+RUN install-php-extensions \
+    pcov
+
+# Coverage is measured when it is asked for rather than always:
+#   php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
+RUN echo "pcov.enabled = 0" > $PHP_INI_DIR/conf.d/pcov.ini
+
+# git for composer, socat for reaching the development CRM (see the entrypoint)
+RUN set -x \
+ && apk add -U --no-cache \
+    git \
+    socat
+
+# Development
+RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
+ && echo "date.timezone = UTC" > $PHP_INI_DIR/conf.d/99-timezone.ini
+
+# Install Composer globally
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# The Caddy configuration of the production image, with its PROXY protocol, so that a request can
+# claim a client address as the proxy's do. A change in caddy/ needs `docker compose build`.
+COPY caddy/ /etc/frankenphp/
+
+# Add on-start commands
+RUN cat <<'EOF' > /usr/local/bin/docker-entrypoint-custom
+#!/bin/sh
+set -e
+
+# Composer operations
+composer install -d /app
+
+# The development CRM answers to localhost only, so its port is carried to localhost here and
+# CRM_API_URL points at https://localhost:8443
+if [ -n "$CRM_DEV_ADDRESS" ]; then
+    socat TCP-LISTEN:8443,fork,reuseaddr TCP:"$CRM_DEV_ADDRESS" &
+fi
+
+exec docker-php-entrypoint "$@"
+EOF
+
+RUN chmod +x /usr/local/bin/docker-entrypoint-custom
+
+ENTRYPOINT ["docker-entrypoint-custom"]
+CMD ["--config", "/etc/frankenphp/Caddyfile", "--adapter", "caddyfile"]
+
+# Run as non-root user
+ARG APPLICATION_USER=application
+RUN \
+	adduser -D ${APPLICATION_USER}; \
+	# Add additional capability to bind to port 80 and 443
+	setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
+	# Give write access to /config/caddy and /data/caddy
+	chown -R ${APPLICATION_USER}:${APPLICATION_USER} /config/caddy /data/caddy
+
+USER ${APPLICATION_USER}

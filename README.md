@@ -73,13 +73,30 @@ coming over IPv6 would not be recognised.
 
 ## Development
 
+As in Watcher CRM, the development container is `compose.dev-frankenphp.yaml` copied to
+`compose.yaml`, which stays out of git and is adjusted as needed (ports, the CRM's address, the
+language). It serves the working tree on https://localhost with the Caddy configuration of the
+production image, and takes a PROXY header from the private networks, Docker's among them, so a
+request from this machine can claim any client address. It reaches the development CRM through
+the port it publishes on the host, `CRM_DEV_ADDRESS`; the CRM key and the provider's come from
+`.env`, and without them the pages say the customer cannot be signed in.
+
+```bash
+docker compose up -d
+docker compose exec -T webserver-dev composer test   # PHPUnit
+docker compose exec -T webserver-dev composer stan   # PHPStan, level max
+curl -k --haproxy-protocol --haproxy-clientip 192.0.2.10 https://localhost/
+```
+
+With PHP on the machine:
+
 ```bash
 composer install
 composer test     # PHPUnit
 composer stan     # PHPStan, level max
 ```
 
-Without PHP on the machine:
+Without PHP and without the container:
 
 ```bash
 docker run --rm -v "$PWD:/app" -w /app composer:2 sh -c 'composer install && composer test && composer stan'
