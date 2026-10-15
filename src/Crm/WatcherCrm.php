@@ -46,7 +46,7 @@ final readonly class WatcherCrm implements CustomerDirectory
 
         $answer = $response->status === 200 ? $response->json() : null;
         if ($answer === null || !array_key_exists('customer', $answer)) {
-            // a refused key is answered with a redirect to the sign-in page, not with 401
+            // a refused key or role: 401 or 403, from Watcher CRM 4.x a redirect to the sign-in page
             throw new CrmUnavailable(sprintf(
                 'Watcher CRM answered with HTTP %d%s.',
                 $response->status,
