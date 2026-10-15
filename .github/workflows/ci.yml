@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'
 
 permissions:
   contents: read
@@ -187,7 +189,8 @@ jobs:
 
   ##########################################################################
   # Join the per-architecture digests into one multi-arch manifest and
-  # attach the real tags to it.
+  # attach the real tags to it: a git tag gets its version (1.2.3, 1.2, 1,
+  # a release candidate only its own), the branch gets latest.
   ##########################################################################
   merge:
     name: Push multi-arch manifest
@@ -221,9 +224,14 @@ jobs:
         with:
           images: ${{ needs.setup.outputs.image }}
           tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable=${{ github.ref_type != 'tag' }}
             type=sha
-            type=raw,value=latest
             type=raw,value=${{ needs.setup.outputs.key }}
+          flavor: |
+            latest=false
 
       - name: Create manifest list and push
         working-directory: ${{ runner.temp }}/digests

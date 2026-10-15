@@ -1,0 +1,13 @@
+# What belongs to this application, imported by the Caddyfile, which is the same in every image.
+
+# FrankenPHP's own defaults: classic mode, threads by the number of CPUs
+(app_frankenphp) {
+}
+
+# Nothing beyond the defaults of the Caddyfile
+(app_site) {
+}
+
+# php_server as it comes
+(app_php_server) {
+}
