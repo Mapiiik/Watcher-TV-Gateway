@@ -71,6 +71,12 @@ Behind HAProxy (TLS passed through by SNI, `send-proxy-v2`), set `LISTENER_MODE=
 Do not publish an AAAA record unless the CRM knows the customers' IPv6 addresses: a customer
 coming over IPv6 would not be recognised.
 
+Only on an internal network, for a test before DNS points at the server or for good, set
+`LISTENER_MODE=internal`: Caddy issues the certificate from its own CA and `SERVER_NAME` must be a single
+name or the server's IP address. Browsers warn until they trust its root certificate,
+`/data/caddy/pki/authorities/local/root.crt` in the container (on Windows
+`certutil -addstore -user Root root.crt`).
+
 ## Development
 
 As in Watcher CRM, the development container is `compose.development.yaml` copied to
