@@ -7,6 +7,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WatcherTvGateway\ConfigurationError;
 use WatcherTvGateway\Customer;
+use WatcherTvGateway\CustomerNetworks;
 use WatcherTvGateway\Environment;
 use WatcherTvGateway\Gateway;
 use WatcherTvGateway\Provider\ProviderAnswer;
@@ -151,6 +152,36 @@ final class GatewayTest extends TestCase
         $this->assertStringContainsString('&lt;script&gt;', $response->body);
     }
 
+    public function testAVisitorFromOutsideTheCustomerNetworksCostsTheCrmNothing(): void
+    {
+        $directory = new FakeDirectory();
+        $gateway = $this->gateway(
+            new FakeProvider(ProviderAnswer::redirect('https://tv.example/')),
+            $directory,
+            new CustomerNetworks(['192.0.2.0/24']),
+        );
+
+        $page = $gateway->handle('GET', '/', '198.51.100.7');
+        $playlist = $gateway->handle('GET', '/channels.m3u', '198.51.100.7');
+
+        $this->assertSame(403, $page->status);
+        $this->assertStringContainsString('198.51.100.7', $page->body);
+        $this->assertStringContainsString('198.51.100.7', $playlist->body);
+        $this->assertSame([], $directory->asked);
+    }
+
+    public function testACustomerInsideTheCustomerNetworksIsRecognised(): void
+    {
+        $provider = new FakeProvider(ProviderAnswer::redirect('https://tv.example/login?token=x'));
+        $directory = new FakeDirectory([self::IP => new Customer('110009')]);
+
+        $response = $this->gateway($provider, $directory, new CustomerNetworks(['192.0.2.0/24']))
+            ->handle('GET', '/', self::IP);
+
+        $this->assertSame(303, $response->status);
+        $this->assertSame([self::IP], $directory->asked);
+    }
+
     public function testOnlyReadingIsAnsweredAndOnlyTheTwoAddresses(): void
     {
         $gateway = $this->gateway(new FakeProvider(ProviderAnswer::redirect('x')));
@@ -178,6 +209,23 @@ final class GatewayTest extends TestCase
         Gateway::fromEnvironment(new Environment(['TV_PROVIDER' => 'sledovanitv']));
     }
 
+    public function testCustomerNetworksThatCannotBeReadAreAMistakeInTheSettings(): void
+    {
+        $this->expectException(ConfigurationError::class);
+        $this->expectExceptionMessage('CUSTOMER_NETWORKS');
+
+        Gateway::fromEnvironment(new Environment([
+            'CRM_API_URL' => 'https://crm.example/api/customer-portal',
+            'CRM_API_KEY' => 'key',
+            'TV_PROVIDER' => 'sledovanitv',
+            'SLEDOVANITV_PARTNER' => 'partner',
+            'SLEDOVANITV_PASSWORD' => 'secret',
+            'OPERATOR_NAME' => 'NETAIR, s.r.o.',
+            'SUPPORT_PHONE' => '+420 604 553 444',
+            'CUSTOMER_NETWORKS' => '192.0.2.0/24, nonsense',
+        ]));
+    }
+
     public function testTemplatesOfItsOwnHaveToBeThere(): void
     {
         $this->expectException(ConfigurationError::class);
@@ -195,8 +243,11 @@ final class GatewayTest extends TestCase
         ]));
     }
 
-    private function gateway(FakeProvider $provider, ?FakeDirectory $directory = null): Gateway
-    {
+    private function gateway(
+        FakeProvider $provider,
+        ?FakeDirectory $directory = null,
+        CustomerNetworks $networks = new CustomerNetworks(),
+    ): Gateway {
         return new Gateway(
             $directory ?? new FakeDirectory([self::IP => new Customer('110009', company: 'NETAIR, s.r.o.')]),
             $provider,
@@ -208,6 +259,7 @@ final class GatewayTest extends TestCase
                 'images' => 'images/',
             ]),
             ['MOPOS'],
+            $networks,
         );
     }
 }

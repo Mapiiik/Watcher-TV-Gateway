@@ -19,13 +19,14 @@ built by GitHub Actions.
 
 1. The client's address comes from the PROXY protocol header the proxy sends. Caddy takes it only
    from `PROXY_ALLOW`, so nobody else can claim an address.
-2. Watcher CRM is asked who uses the address (`GET /api/customer-portal/identify`), as a CRM user
+2. An address outside `CUSTOMER_NETWORKS` is told it was not recognised, without a lookup.
+3. Watcher CRM is asked who uses the address (`GET /api/customer-portal/identify`), as a CRM user
    with the `customer-identification` role and its API key, which may ask nothing else. The CRM
-   logs every lookup and refuses more than its settings allow in a minute. Only a customer with
-   an installation address counts, and customers of the companies in `EXCLUDED_COMPANIES` are
-   left out.
-3. The provider (`TV_PROVIDER`) gets the customer number as the customer's identity there,
-   with their name, e-mail and installation address, and answers where to send them.
+   logs every lookup and refuses more addresses than its settings allow in a minute. Only a
+   customer with an installation address counts, and customers of the companies in
+   `EXCLUDED_COMPANIES` are left out.
+4. The provider (`TV_PROVIDER`) gets the customer number as the customer's identity there,
+   with their name, e-mail and billing address, and answers where to send them.
 
 Anything that cannot be done ends on a page (or, for a player, in a playlist with one entry)
 that says so and shows the address the customer came from. The reason goes to the log, never to
@@ -68,6 +69,10 @@ docker compose up -d
 
 Behind HAProxy (TLS passed through by SNI, `send-proxy-v2`), set `LISTENER_MODE=behind-proxy` and
 `PROXY_ALLOW` to the proxy's network. The certificate is then obtained with the TLS-ALPN challenge.
+
+Set `CUSTOMER_NETWORKS` to the networks customers connect from, the private ones too if customers
+reach the gateway without NAT. Without it every visitor from the internet is one more address the
+CRM counts, and over the limit nobody is recognised until the minute ends.
 Do not publish an AAAA record unless the CRM knows the customers' IPv6 addresses: a customer
 coming over IPv6 would not be recognised.
 

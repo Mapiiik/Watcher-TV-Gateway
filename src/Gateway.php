@@ -28,6 +28,7 @@ final readonly class Gateway
         private TvProvider $provider,
         private Templates $templates,
         private array $excludedCompanies = [],
+        private CustomerNetworks $customerNetworks = new CustomerNetworks(),
     ) {
     }
 
@@ -59,6 +60,7 @@ final readonly class Gateway
                 'images' => is_dir($root . '/public/images/' . $language) ? 'images/' . $language . '/' : 'images/',
             ], Translations::forLocale($locale, $root . '/resources/locales')),
             $env->list('EXCLUDED_COMPANIES'),
+            new CustomerNetworks($env->list('CUSTOMER_NETWORKS')),
         );
     }
 
@@ -138,7 +140,7 @@ final readonly class Gateway
      */
     private function recognise(string $ip): ?Customer
     {
-        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false || !$this->customerNetworks->contains($ip)) {
             return null;
         }
         $customer = $this->customers->findByAddress($ip);
