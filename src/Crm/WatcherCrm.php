@@ -12,8 +12,8 @@ use WatcherTvGateway\Http\HttpRequest;
 /**
  * Watcher CRM, asked over its customer portal API as a user with the customer-identification role.
  *
- * Only a customer with an installation address counts as connected: the TV service is for the
- * place a connection is installed at, and an address of somebody without one is not a home.
+ * The address of a customer is the one they are billed at: the TV service is theirs, not that of
+ * a connection. Without any there is nothing to tell the provider, so such a customer is left out.
  */
 final readonly class WatcherCrm implements CustomerDirectory
 {

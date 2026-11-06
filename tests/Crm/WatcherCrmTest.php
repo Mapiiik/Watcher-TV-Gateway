@@ -39,7 +39,7 @@ final class WatcherCrmTest extends TestCase
         $this->assertSame('application/json', $request->headers['Accept']);
     }
 
-    public function testACustomerWithAnInstallationAddressIsFound(): void
+    public function testACustomerWithAnAddressIsFound(): void
     {
         $this->http->answerJson(200, ['customer' => [
             'id' => 'a1bf2e62-2ab2-4a99-8baf-2cf5bc6d4fa8',
@@ -66,7 +66,7 @@ final class WatcherCrmTest extends TestCase
         $this->assertSame('512 43', $customer->postcode);
     }
 
-    public function testNobodyAndACustomerWithoutAnInstallationAddressAreNotFound(): void
+    public function testNobodyAndACustomerWithoutAnAddressAreNotFound(): void
     {
         $this->http
             ->answerJson(200, ['customer' => null])

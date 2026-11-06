@@ -22,9 +22,8 @@ built by GitHub Actions.
 2. An address outside `CUSTOMER_NETWORKS` is told it was not recognised, without a lookup.
 3. Watcher CRM is asked who uses the address (`GET /api/customer-portal/identify`), as a CRM user
    with the `customer-identification` role and its API key, which may ask nothing else. The CRM
-   logs every lookup and refuses more addresses than its settings allow in a minute. Only a
-   customer with an installation address counts, and customers of the companies in
-   `EXCLUDED_COMPANIES` are left out.
+   logs every lookup and refuses more addresses than its settings allow in a minute. Customers
+   of the companies in `EXCLUDED_COMPANIES` are left out.
 4. The provider (`TV_PROVIDER`) gets the customer number as the customer's identity there,
    with their name, e-mail and billing address, and answers where to send them.
 
