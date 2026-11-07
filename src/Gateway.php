@@ -61,7 +61,7 @@ final readonly class Gateway
                 'images' => is_dir($root . '/public/images/' . $language) ? 'images/' . $language . '/' : 'images/',
             ], Translations::forLocale($locale, $root . '/resources/locales')),
             $env->list('EXCLUDED_COMPANIES'),
-            new CustomerNetworks($env->list('CUSTOMER_NETWORKS')),
+            new CustomerNetworks($env->words('CUSTOMER_NETWORKS')),
         );
     }
 

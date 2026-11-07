@@ -40,6 +40,20 @@ final class EnvironmentTest extends TestCase
         $env->flag('ODD', true);
     }
 
+    public function testWordsAreSeparatedBySpacesOrCommas(): void
+    {
+        $env = new Environment([
+            'SPACES' => '192.0.2.0/24 2001:db8::/32',
+            'COMMAS' => '192.0.2.0/24,2001:db8::/32',
+            'BOTH' => ' 192.0.2.0/24,  2001:db8::/32 ',
+        ]);
+
+        foreach (['SPACES', 'COMMAS', 'BOTH'] as $name) {
+            $this->assertSame(['192.0.2.0/24', '2001:db8::/32'], $env->words($name), $name);
+        }
+        $this->assertSame([], $env->words('MISSING'));
+    }
+
     public function testAListLeavesOutEmptyItems(): void
     {
         $env = new Environment(['LIST' => ' MOPOS, ,Other ']);

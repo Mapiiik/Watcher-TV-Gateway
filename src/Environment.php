@@ -79,4 +79,15 @@ final readonly class Environment
 
         return array_values(array_filter($items, static fn(string $item): bool => $item !== ''));
     }
+
+    /**
+     * A setting that lists values without spaces of their own, such as networks, separated by
+     * spaces. Commas are taken as well.
+     *
+     * @return list<string>
+     */
+    public function words(string $name): array
+    {
+        return preg_split('/[\s,]+/', $this->optional($name), flags: PREG_SPLIT_NO_EMPTY) ?: [];
+    }
 }

@@ -297,7 +297,7 @@ final class GatewayTest extends TestCase
             'SLEDOVANITV_PASSWORD' => 'secret',
             'OPERATOR_NAME' => 'NETAIR, s.r.o.',
             'SUPPORT_EMAIL' => 'support@example.net',
-            'CUSTOMER_NETWORKS' => '10.0.0.0/8',
+            'CUSTOMER_NETWORKS' => '10.0.0.0/8 192.0.2.0/24',
         ]));
 
         $body = $gateway->handle('GET', '/', '198.51.100.7')->body;
