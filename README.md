@@ -68,7 +68,7 @@ docker compose up -d
 ```
 
 Behind HAProxy (TLS passed through by SNI, `send-proxy-v2`), set `LISTENER_MODE=behind-proxy` and
-`PROXY_ALLOW` to the proxy's network. The certificate is then obtained with the TLS-ALPN challenge.
+`PROXY_ALLOW` to the proxy's address. The certificate is then obtained with the TLS-ALPN challenge.
 
 Set `CUSTOMER_NETWORKS` to the networks customers connect from, the private ones too if customers
 reach the gateway without NAT. Without it every visitor from the internet is one more address the
