@@ -1,16 +1,17 @@
 <?php
 /**
- * Collects the texts the templates translate with $t() into resources/locales/default.pot and
- * brings every catalogue in resources/locales/<locale>/default.po up to date with it: translations
- * of texts still in use stay, texts no longer in use go, new ones come in untranslated and are
- * listed. Translate them in Poedit, or any editor of .po files.
+ * Collects the texts translated with $t(), in the templates and in the class that fills them in,
+ * into resources/locales/default.pot and brings every catalogue in
+ * resources/locales/<locale>/default.po up to date with it: translations of texts still in use stay,
+ * texts no longer in use go, new ones come in untranslated and are listed. Translate them in Poedit,
+ * or any editor of .po files.
  *
  * Usage: php bin/extract-texts.php
  */
 $root = dirname(__DIR__);
 
 $texts = [];
-foreach (glob($root . '/templates/*.php') as $file) {
+foreach ([...glob($root . '/templates/*.php'), $root . '/src/Templates.php'] as $file) {
     $tokens = token_get_all(file_get_contents($file));
     foreach ($tokens as $i => $token) {
         if (!is_array($token) || $token[0] !== T_VARIABLE || $token[1] !== '$t') {
