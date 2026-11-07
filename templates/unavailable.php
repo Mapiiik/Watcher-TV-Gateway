@@ -15,6 +15,8 @@
     <h2><?= $e($t('%s – identification failed', $v['service'])) ?></h2>
     <p><?= $e($t('Signing in and registration are out of service at the moment. Please try again in a while.')) ?></p>
     <p><?= $e($t('Your IP address is: %s', $v['ip'])) ?></p>
-    <p><?= $e($t('If the trouble persists, please call us on %s.', $v['supportPhone'])) ?></p>
+    <?php if ($v['contact'] !== '') : ?>
+    <p><?= $e($t('If the trouble persists, please %s.', $v['contact'])) ?></p>
+    <?php endif ?>
 </body>
 </html>

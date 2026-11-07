@@ -10,7 +10,8 @@ use Gettext\TranslatorInterface;
  * The pages and playlists the gateway answers with when it cannot send the customer on.
  *
  * A template sees its values as `$v`, translates a text with `$t` (sprintf placeholders filled
- * from the further arguments) and escapes for HTML with `$e`.
+ * from the further arguments) and escapes for HTML with `$e`. `$v['contact']` is how to reach the
+ * operator, in words, and empty when it gave neither a phone nor an e-mail.
  */
 final readonly class Templates
 {
@@ -65,6 +66,7 @@ final readonly class Templates
         $translator = $this->translator;
         $t = static fn(string $text, string ...$args): string => vsprintf($translator->gettext($text), $args);
         $e = static fn(string $text): string => htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $v['contact'] = self::contact($v['supportPhone'] ?? '', $v['supportEmail'] ?? '', $t);
 
         ob_start();
         try {
@@ -76,5 +78,22 @@ final readonly class Templates
         }
 
         return $output;
+    }
+
+    /**
+     * How to reach the operator, with whichever of the two it gave.
+     *
+     * @param string $phone The support phone.
+     * @param string $email The support e-mail.
+     * @param \Closure(string, string...): string $t Translates a text.
+     */
+    private static function contact(string $phone, string $email, \Closure $t): string
+    {
+        return match (true) {
+            $phone !== '' && $email !== '' => $t('call us on %s or write to us at %s', $phone, $email),
+            $phone !== '' => $t('call us on %s', $phone),
+            $email !== '' => $t('write to us at %s', $email),
+            default => '',
+        };
     }
 }

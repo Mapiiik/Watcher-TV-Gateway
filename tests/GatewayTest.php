@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace WatcherTvGateway\Test;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use WatcherTvGateway\ConfigurationError;
 use WatcherTvGateway\Customer;
@@ -85,6 +86,44 @@ final class GatewayTest extends TestCase
         $this->assertStringContainsString('call us on +420 604 553 444', $response->body);
         $this->assertStringContainsString(self::IP, $response->body);
         $this->assertStringNotContainsString('try again in a while', $response->body);
+    }
+
+    /**
+     * Each page offers whichever of the phone and the e-mail the operator gave.
+     */
+    #[TestWith(['+420 604 553 444', 'support@example.net', 'call us on +420 604 553 444 or write to us at support@example.net'])]
+    #[TestWith(['+420 604 553 444', '', 'call us on +420 604 553 444'])]
+    #[TestWith(['', 'support@example.net', 'write to us at support@example.net'])]
+    public function testThePagesOfferWhatTheOperatorGave(string $phone, string $email, string $offered): void
+    {
+        $templates = $this->pagesWith($phone, $email);
+
+        $this->assertStringContainsString('Please ' . $offered . ' and we will', $templates->render('refused', ['ip' => self::IP]));
+        $this->assertStringContainsString('please ' . $offered . '.', $templates->render('unavailable', ['ip' => self::IP]));
+        $this->assertStringContainsString('please ' . $offered . '.', $templates->render('not-identified', ['ip' => self::IP]));
+    }
+
+    /**
+     * With neither there is nothing to offer, and no sentence is left standing without an end.
+     */
+    public function testWithoutAContactThePagesSayNothingAboutIt(): void
+    {
+        $templates = $this->pagesWith('', '');
+
+        $this->assertStringNotContainsString('sort it out', $templates->render('refused', ['ip' => self::IP]));
+        $this->assertStringNotContainsString('If the trouble persists', $templates->render('unavailable', ['ip' => self::IP]));
+        $this->assertStringNotContainsString('If you are a customer', $templates->render('not-identified', ['ip' => self::IP]));
+    }
+
+    private function pagesWith(string $phone, string $email): Templates
+    {
+        return new Templates(dirname(__DIR__) . '/templates', [
+            'operator' => 'NETAIR, s.r.o.',
+            'supportPhone' => $phone,
+            'supportEmail' => $email,
+            'service' => 'TestTV',
+            'language' => 'en',
+        ]);
     }
 
     public function testAPageTheOperatorsOwnDirectoryLacksIsTheBuiltInOne(): void
@@ -232,6 +271,38 @@ final class GatewayTest extends TestCase
 
         $this->expectException(ConfigurationError::class);
         Gateway::fromEnvironment(new Environment(['TV_PROVIDER' => 'sledovanitv']));
+    }
+
+    public function testTheContactsAreLeftToTheOperator(): void
+    {
+        $gateway = Gateway::fromEnvironment(new Environment([
+            'CRM_API_URL' => 'https://crm.example.net/api/customer-portal',
+            'CRM_API_KEY' => 'portal-key',
+            'TV_PROVIDER' => 'sledovanitv',
+            'SLEDOVANITV_PARTNER' => 'netair',
+            'SLEDOVANITV_PASSWORD' => 'secret',
+            'OPERATOR_NAME' => 'NETAIR, s.r.o.',
+        ]));
+
+        $this->assertSame(404, $gateway->handle('GET', '/nothing', self::IP)->status);
+    }
+
+    public function testTheEmailOfTheSettingsReachesThePages(): void
+    {
+        $gateway = Gateway::fromEnvironment(new Environment([
+            'CRM_API_URL' => 'https://crm.example.net/api/customer-portal',
+            'CRM_API_KEY' => 'portal-key',
+            'TV_PROVIDER' => 'sledovanitv',
+            'SLEDOVANITV_PARTNER' => 'netair',
+            'SLEDOVANITV_PASSWORD' => 'secret',
+            'OPERATOR_NAME' => 'NETAIR, s.r.o.',
+            'SUPPORT_EMAIL' => 'support@example.net',
+            'CUSTOMER_NETWORKS' => '10.0.0.0/8',
+        ]));
+
+        $body = $gateway->handle('GET', '/', '198.51.100.7')->body;
+
+        $this->assertStringContainsString('write to us at support@example.net', $body);
     }
 
     public function testCustomerNetworksThatCannotBeReadAreAMistakeInTheSettings(): void

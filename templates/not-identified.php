@@ -16,6 +16,8 @@
     <p><?= $e($t('Dear customer,')) ?></p>
     <p><?= $e($t('you are trying to register with %s. Unfortunately we could not identify you. To register, or to be signed in to an account you already have, you have to be connected to the internet at the connection %s provides you with.', $v['service'], $v['operator'])) ?></p>
     <p><?= $e($t('Your IP address is: %s', $v['ip'])) ?></p>
-    <p><?= $e($t('If you are a customer of %s, please call us on %s.', $v['operator'], $v['supportPhone'])) ?></p>
+    <?php if ($v['contact'] !== '') : ?>
+    <p><?= $e($t('If you are a customer of %s, please %s.', $v['operator'], $v['contact'])) ?></p>
+    <?php endif ?>
 </body>
 </html>

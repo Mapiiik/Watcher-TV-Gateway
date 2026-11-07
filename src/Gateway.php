@@ -53,7 +53,8 @@ final readonly class Gateway
             $provider,
             new Templates($templates, [
                 'operator' => $env->required('OPERATOR_NAME'),
-                'supportPhone' => $env->required('SUPPORT_PHONE'),
+                'supportPhone' => $env->optional('SUPPORT_PHONE'),
+                'supportEmail' => $env->optional('SUPPORT_EMAIL'),
                 'service' => $provider->name(),
                 'language' => $language,
                 // the pictures of a playlist entry carry text, so there is a set for each language

@@ -42,8 +42,8 @@ settings read in `fromEnvironment()`, and gets its name in `WatcherTvGateway\Pro
 
 ## Making it yours
 
-Nothing about the operator is in the code. Its name and support phone come from `OPERATOR_NAME`
-and `SUPPORT_PHONE`, the customers left out from `EXCLUDED_COMPANIES`.
+Nothing about the operator is in the code. Its name and support contacts come from `OPERATOR_NAME`,
+`SUPPORT_PHONE` and `SUPPORT_EMAIL`, the customers left out from `EXCLUDED_COMPANIES`.
 
 The texts of the pages and playlist entries in `templates/` are English and translated, as in
 Watcher CRM, from `resources/locales/<locale>/default.po` (`cs_CZ` so far); `APP_DEFAULT_LOCALE`
@@ -54,7 +54,7 @@ those of a language.
 
 For texts of your own, mount a directory with the same files as `templates/` and point
 `TEMPLATES_DIR` at it, what it leaves out comes from `templates/`. A template gets its values in
-`$v` (`ip`, `operator`, `supportPhone`, `service`, `language`, `images`), translates with `$t` and
+`$v` (`ip`, `operator`, `supportPhone`, `supportEmail`, `service`, `language`, `images`), translates with `$t` and
 escapes for HTML with `$e`.
 
 ## Running it

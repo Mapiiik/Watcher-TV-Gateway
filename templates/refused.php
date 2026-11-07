@@ -18,6 +18,8 @@
     <p><?= $e($t('Dear customer,')) ?></p>
     <p><?= $e($t('%s cannot sign you in or register you with the details we have for you, and trying again will not change that.', $v['service'])) ?></p>
     <p><?= $e($t('Your IP address is: %s', $v['ip'])) ?></p>
-    <p><?= $e($t('Please call us on %s and we will sort it out.', $v['supportPhone'])) ?></p>
+    <?php if ($v['contact'] !== '') : ?>
+    <p><?= $e($t('Please %s and we will sort it out.', $v['contact'])) ?></p>
+    <?php endif ?>
 </body>
 </html>
