@@ -101,6 +101,10 @@ final readonly class Gateway
         }
         error_log($answer->reason !== '' ? $answer->reason : $this->provider->name() . ' does not know the customer.');
 
+        if ($answer->outcome === ProviderOutcome::Refused) {
+            return $this->templates->page(403, 'refused', ['ip' => $ip]);
+        }
+
         return $this->templates->page(503, 'unavailable', ['ip' => $ip]);
     }
 
@@ -122,7 +126,7 @@ final readonly class Gateway
         return match ($answer->outcome) {
             ProviderOutcome::Redirect => Response::redirect($answer->url, 302),
             ProviderOutcome::UnknownCustomer => $this->templates->playlist('playlist-not-registered', ['ip' => $ip]),
-            ProviderOutcome::Unavailable => $this->unavailablePlaylist($answer->reason, $ip),
+            ProviderOutcome::Refused, ProviderOutcome::Unavailable => $this->unavailablePlaylist($answer->reason, $ip),
         };
     }
 

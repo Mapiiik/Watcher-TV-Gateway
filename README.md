@@ -53,8 +53,9 @@ playlist entry carry text too: `public/images/` holds the English ones, `public/
 those of a language.
 
 For texts of your own, mount a directory with the same files as `templates/` and point
-`TEMPLATES_DIR` at it. A template gets its values in `$v` (`ip`, `operator`, `supportPhone`,
-`service`, `language`, `images`), translates with `$t` and escapes for HTML with `$e`.
+`TEMPLATES_DIR` at it, what it leaves out comes from `templates/`. A template gets its values in
+`$v` (`ip`, `operator`, `supportPhone`, `service`, `language`, `images`), translates with `$t` and
+escapes for HTML with `$e`.
 
 ## Running it
 

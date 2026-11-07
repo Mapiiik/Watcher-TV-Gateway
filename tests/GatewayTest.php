@@ -76,6 +76,28 @@ final class GatewayTest extends TestCase
         }
     }
 
+    public function testACustomerTheProviderRefusesIsToldToCallRatherThanToTryAgain(): void
+    {
+        $response = $this->gateway(new FakeProvider(ProviderAnswer::refused('test')))
+            ->handle('GET', '/', self::IP);
+
+        $this->assertSame(403, $response->status);
+        $this->assertStringContainsString('call us on +420 604 553 444', $response->body);
+        $this->assertStringContainsString(self::IP, $response->body);
+        $this->assertStringNotContainsString('try again in a while', $response->body);
+    }
+
+    public function testAPageTheOperatorsOwnDirectoryLacksIsTheBuiltInOne(): void
+    {
+        $templates = new Templates(__DIR__, [
+            'supportPhone' => '+420 604 553 444',
+            'service' => 'TestTV',
+            'language' => 'en',
+        ]);
+
+        $this->assertStringContainsString('call us on', $templates->page(403, 'refused', ['ip' => self::IP])->body);
+    }
+
     public function testThePlaylistOfARecognisedCustomerIsTheProviders(): void
     {
         $response = $this->gateway(new FakeProvider(ProviderAnswer::redirect('https://tv.example/list.m3u')))
@@ -93,11 +115,14 @@ final class GatewayTest extends TestCase
             ->handle('GET', '/channels.m3u', self::IP);
         $unavailable = $this->gateway(new FakeProvider(ProviderAnswer::unavailable('test')))
             ->handle('GET', '/channels.m3u', self::IP);
+        $refused = $this->gateway(new FakeProvider(ProviderAnswer::refused('test')))
+            ->handle('GET', '/channels.m3u', self::IP);
 
         $this->assertSame("#EXTM3U\n#EXTINF:,Your address 198.51.100.7 has no TV registered\nimages/not-identified.jpg\n", $notIdentified->body);
         $this->assertSame('audio/x-mpegurl; charset=UTF-8', $notIdentified->headers['Content-Type']);
         $this->assertStringEndsWith("images/not-registered.jpg\n", $notRegistered->body);
         $this->assertStringContainsString('The channel list could not be downloaded', $unavailable->body);
+        $this->assertStringContainsString('The channel list could not be downloaded', $refused->body);
     }
 
     public function testTheTextsAndPicturesAreInTheLanguageOfTheDeployment(): void

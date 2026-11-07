@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace WatcherTvGateway\Test\Provider;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use WatcherTvGateway\Customer;
 use WatcherTvGateway\Environment;
@@ -87,14 +88,26 @@ final class SledovaniTvTest extends TestCase
         $this->assertSame(ProviderOutcome::UnknownCustomer, $unknown->outcome);
     }
 
-    public function testAnErrorTheCustomerCannotHelpIsUnavailable(): void
+    public function testAnErrorThatIsNotAboutTheCustomerIsUnavailable(): void
     {
-        $this->http->answerJson(200, ['status' => 0, 'error' => 'login used']);
+        $this->http->answerJson(200, ['status' => 0, 'error' => 'failed']);
 
         $answer = $this->provider->signIn($this->customer, '192.0.2.10');
 
         $this->assertSame(ProviderOutcome::Unavailable, $answer->outcome);
-        $this->assertStringContainsString('login used', $answer->reason);
+        $this->assertStringContainsString('failed', $answer->reason);
+    }
+
+    #[TestWith(['login used'])]
+    #[TestWith(['invalid email'])]
+    public function testDetailsTheProviderWillNotTakeAreARefusal(string $error): void
+    {
+        $this->http->answerJson(200, ['status' => 0, 'error' => $error]);
+
+        $answer = $this->provider->signIn($this->customer, '192.0.2.10');
+
+        $this->assertSame(ProviderOutcome::Refused, $answer->outcome);
+        $this->assertStringContainsString($error, $answer->reason);
     }
 
     public function testRefusedPartnerCredentialsAreReportedAsSuch(): void

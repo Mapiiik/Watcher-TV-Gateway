@@ -14,6 +14,8 @@ use Gettext\TranslatorInterface;
  */
 final readonly class Templates
 {
+    private const string BUILT_IN = __DIR__ . '/../templates';
+
     private TranslatorInterface $translator;
 
     /**
@@ -55,6 +57,10 @@ final readonly class Templates
     public function render(string $name, array $values): string
     {
         $file = $this->directory . '/' . $name . '.php';
+        // a directory of the operator's own may be older than the template
+        if (!is_file($file)) {
+            $file = self::BUILT_IN . '/' . $name . '.php';
+        }
         $v = $values + $this->common;
         $translator = $this->translator;
         $t = static fn(string $text, string ...$args): string => vsprintf($translator->gettext($text), $args);

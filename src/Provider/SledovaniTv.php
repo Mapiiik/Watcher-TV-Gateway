@@ -21,6 +21,11 @@ final readonly class SledovaniTv implements TvProvider
 {
     public const string DEFAULT_API_URL = 'https://sledovanitv.cz/partner/api';
 
+    /**
+     * Errors about the details sent for a customer, which stay until somebody changes them.
+     */
+    private const array DETAILS_REFUSED = ['login used', 'invalid email'];
+
     public function __construct(
         private HttpClient $http,
         private string $apiUrl,
@@ -110,12 +115,16 @@ final readonly class SledovaniTv implements TvProvider
             return ProviderAnswer::unknownCustomer();
         }
         if ($error !== null) {
-            return ProviderAnswer::unavailable(sprintf(
+            $reason = sprintf(
                 'SledovaniTV %s refused with HTTP %d: %s',
                 $function,
                 $response->status,
                 is_scalar($error) ? (string)$error : json_encode($error),
-            ));
+            );
+
+            return in_array($error, self::DETAILS_REFUSED, true)
+                ? ProviderAnswer::refused($reason)
+                : ProviderAnswer::unavailable($reason);
         }
 
         $url = $answer['url'] ?? null;

@@ -28,6 +28,14 @@ final readonly class ProviderAnswer
     /**
      * @param string $reason For the log, never shown to the customer.
      */
+    public static function refused(string $reason): self
+    {
+        return new self(ProviderOutcome::Refused, reason: $reason);
+    }
+
+    /**
+     * @param string $reason For the log, never shown to the customer.
+     */
     public static function unavailable(string $reason): self
     {
         return new self(ProviderOutcome::Unavailable, reason: $reason);

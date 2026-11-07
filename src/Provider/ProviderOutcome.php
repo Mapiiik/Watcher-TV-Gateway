@@ -11,6 +11,9 @@ enum ProviderOutcome
     /** The provider does not know the customer yet. */
     case UnknownCustomer;
 
-    /** The provider did not answer, or refused for a reason the customer cannot do anything about. */
+    /** The provider will not take the customer's details, and no later attempt changes that. */
+    case Refused;
+
+    /** The provider did not answer, or failed for a reason that says nothing about the customer. */
     case Unavailable;
 }
