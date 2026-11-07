@@ -5,16 +5,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "%s cannot sign you in or register you with the details we have for you, and trying again will not change that."
+msgstr ""
+
 msgid "%s – identification failed"
 msgstr ""
 
 msgid "Dear customer,"
 msgstr ""
 
-msgid "If the trouble persists, please call us on %s."
+msgid "If the trouble persists, please %s."
 msgstr ""
 
-msgid "If you are a customer of %s, please call us on %s."
+msgid "If you are a customer of %s, please %s."
+msgstr ""
+
+msgid "Please %s and we will sort it out."
 msgstr ""
 
 msgid "Signing in and registration are out of service at the moment. Please try again in a while."
@@ -27,6 +33,15 @@ msgid "Your IP address is: %s"
 msgstr ""
 
 msgid "Your address %s has no TV registered"
+msgstr ""
+
+msgid "call us on %s"
+msgstr ""
+
+msgid "call us on %s or write to us at %s"
+msgstr ""
+
+msgid "write to us at %s"
 msgstr ""
 
 msgid "you are trying to register with %s. Unfortunately we could not identify you. To register, or to be signed in to an account you already have, you have to be connected to the internet at the connection %s provides you with."

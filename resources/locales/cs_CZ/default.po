@@ -6,17 +6,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: cs_CZ\n"
 
+msgid "%s cannot sign you in or register you with the details we have for you, and trying again will not change that."
+msgstr "%s Vás s údaji, které o Vás máme, nemůže přihlásit ani zaregistrovat a další pokus na tom nic nezmění."
+
 msgid "%s – identification failed"
 msgstr "%s – identifikace selhala"
 
 msgid "Dear customer,"
 msgstr "Vážený zákazníku,"
 
-msgid "If the trouble persists, please call us on %s."
-msgstr "Pokud potíže trvají, informujte nás prosím na telefonním čísle %s."
+msgid "If the trouble persists, please %s."
+msgstr "Pokud potíže přetrvávají, %s."
 
-msgid "If you are a customer of %s, please call us on %s."
-msgstr "Pokud jste zákazníkem %s, informujte nás prosím na telefonním čísle %s."
+msgid "If you are a customer of %s, please %s."
+msgstr "Pokud jste zákazníkem společnosti %s, %s."
+
+msgid "Please %s and we will sort it out."
+msgstr "Vyřešíme to společně, %s."
 
 msgid "Signing in and registration are out of service at the moment. Please try again in a while."
 msgstr "Registrace a přihlašování je teď mimo provoz. Zkuste to prosím za chvíli."
@@ -29,6 +35,15 @@ msgstr "Vaše IP adresa je: %s"
 
 msgid "Your address %s has no TV registered"
 msgstr "Vaše adresa %s nemá vysílání zaregistrované"
+
+msgid "call us on %s"
+msgstr "zavolejte nám na %s"
+
+msgid "call us on %s or write to us at %s"
+msgstr "zavolejte nám na %s nebo napište na %s"
+
+msgid "write to us at %s"
+msgstr "napište nám na %s"
 
 msgid "you are trying to register with %s. Unfortunately we could not identify you. To register, or to be signed in to an account you already have, you have to be connected to the internet at the connection %s provides you with."
 msgstr "pokoušíte se zaregistrovat ke službě %s. Bohužel se Vás nepodařilo identifikovat. Pro registraci nebo automatické přihlášení do již vytvořeného účtu je nutné, abyste byli připojeni k internetu na přípojce, kterou Vám %s poskytuje."
