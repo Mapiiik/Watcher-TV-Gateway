@@ -13,7 +13,8 @@ RUN composer install \
     --no-progress \
     --no-scripts \
     --no-autoloader \
-    --ignore-platform-req=php
+    --ignore-platform-req=php \
+    --ignore-platform-req=ext-mbstring
 # the classmap is built from the code, so the code has to be there first
 COPY src/ ./src/
 RUN composer dump-autoload --no-dev --classmap-authoritative
