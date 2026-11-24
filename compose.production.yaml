@@ -1,6 +1,6 @@
 services:
   tv-gateway:
-    image: ghcr.io/mapiiik/watcher-tv-gateway:1
+    image: ghcr.io/mapiiik/watcher-tv-gateway:latest
     restart: unless-stopped
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}
