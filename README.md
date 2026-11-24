@@ -67,6 +67,9 @@ escapes for HTML with `$e`.
 docker compose up -d
 ```
 
+The image `1` is the newest release of 1.x, as are `latest` and the release's own version; `main`
+is built from the branch.
+
 Behind HAProxy (TLS passed through by SNI, `send-proxy-v2`), set `LISTENER_MODE=behind-proxy` and
 `PROXY_ALLOW` to the proxy's address. The certificate is then obtained with the TLS-ALPN challenge.
 
